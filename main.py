@@ -22,14 +22,13 @@ sys.path.insert(0, str(project_root))
 from helpers.traffic_retention import TrafficRetention
 from helpers.utils import setup_logger
 
-
 def main():
     """Função principal do processo ETL."""
     logger = setup_logger('main')
 
     try:
         logger.info("=" * 60)
-        logger.info("INICIANDO PROCESSO ETL016 - RETENÇÃO DE DADOS TRÁFEGO")
+        logger.info("INICIANDO PROCESSO - RETENÇÃO DE DADOS TRÁFEGO")
         logger.info("=" * 60)
 
         # Executar processo de retenção usando context manager

@@ -1,4 +1,3 @@
-
 # Retenção de Dados Tráfego
 
 Sistema automatizado de purge diário que assegura que a tabela `f_trafegoc01` conserva apenas registos de tráfego dos últimos 3 meses, eliminando dados mais antigos.
@@ -68,7 +67,7 @@ Manter apenas os últimos **3 meses** de dados de tráfego na tabela `f_trafegoc
         "subject": "Sucesso: Retenção Dados Tráfego"
     },
     "error_report": {
-        "from_mail": "dsi-suporte-rpa@cvt.cv", 
+        "from_mail": "dsi-suporte-rpa@cvt.cv",
         "to": "alertas.rpa@cvt.cv",
         "subject": "Erro: Retenção Dados Tráfego"
     }
@@ -188,7 +187,7 @@ python main.py
 
 ```
 INFO  - Operações normais
-WARN  - Situações de atenção  
+WARN  - Situações de atenção
 ERROR - Erros recuperáveis
 DEBUG - Informação detalhada
 ```
@@ -310,5 +309,3 @@ Uso interno exclusivo.
 ---
 
  **💡 Dica** : Para execução manual de teste, use `python main.py` no ambiente virtual ativado.
-
-<style>#mermaid-1757494591101{font-family:sans-serif;font-size:16px;fill:#333;}#mermaid-1757494591101 .error-icon{fill:#552222;}#mermaid-1757494591101 .error-text{fill:#552222;stroke:#552222;}#mermaid-1757494591101 .edge-thickness-normal{stroke-width:2px;}#mermaid-1757494591101 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1757494591101 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1757494591101 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1757494591101 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1757494591101 .marker{fill:#333333;}#mermaid-1757494591101 .marker.cross{stroke:#333333;}#mermaid-1757494591101 svg{font-family:sans-serif;font-size:16px;}#mermaid-1757494591101 .label{font-family:sans-serif;color:#333;}#mermaid-1757494591101 .label text{fill:#333;}#mermaid-1757494591101 .node rect,#mermaid-1757494591101 .node circle,#mermaid-1757494591101 .node ellipse,#mermaid-1757494591101 .node polygon,#mermaid-1757494591101 .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaid-1757494591101 .node .label{text-align:center;}#mermaid-1757494591101 .node.clickable{cursor:pointer;}#mermaid-1757494591101 .arrowheadPath{fill:#333333;}#mermaid-1757494591101 .edgePath .path{stroke:#333333;stroke-width:1.5px;}#mermaid-1757494591101 .flowchart-link{stroke:#333333;fill:none;}#mermaid-1757494591101 .edgeLabel{background-color:#e8e8e8;text-align:center;}#mermaid-1757494591101 .edgeLabel rect{opacity:0.5;background-color:#e8e8e8;fill:#e8e8e8;}#mermaid-1757494591101 .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#mermaid-1757494591101 .cluster text{fill:#333;}#mermaid-1757494591101 div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:sans-serif;font-size:12px;background:hsl(80,100%,96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-1757494591101:root{--mermaid-font-family:sans-serif;}#mermaid-1757494591101:root{--mermaid-alt-font-family:sans-serif;}#mermaid-1757494591101 flowchart-v2{fill:apa;}</style>

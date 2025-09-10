@@ -4,10 +4,11 @@ Script principal para execução do processo de retenção de dados de tráfego.
 
 Processo: Retenção de Dados Tráfego
 ID: ETL016
-Descrição: Purge diário que assegura que a tabela f_trafegoc01 conserva
-           apenas registos de tráfego dos últimos 3 meses.
+Descrição: Purge diário que assegura que a tabela "f_trafegoc01" conserva apenas registos de tráfego dos últimos 3 meses.
 
-Autor: Sistema ETL CVT
+Autor: Joselito Coutinho - CVT00985
+Email: joselito.coutinho@cvt.cv
+Data Criação: 2025-09-08
 Versão: 0.1.0
 """
 
@@ -61,7 +62,6 @@ def main():
         logger.info("=" * 60)
 
     return exit_code
-
 
 if __name__ == "__main__":
     sys.exit(main())

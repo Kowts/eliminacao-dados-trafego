@@ -1,9 +1,9 @@
 {
     "process": {
         "name": "Retenção de Dados Tráfego",
-        "identifier": "ETL016",
+        "identifier": "ETL026",
         "description": "Purge diário que assegura que a tabela f_trafegoc01 conserva apenas registos de tráfego dos últimos 3 meses, eliminando dados mais antigos.",
-        "version": "0.1.0",
+        "version": "2.1.0",
         "execMode": "daily",
         "execDay": 2,
         "execTime": "06:00"
@@ -19,7 +19,7 @@
     },
     "report": {
         "from_mail": "dsi-suporte-rpa@cvt.cv",
-        "to": "joselito.coutinho@cvt.cv",
+        "to": "DMK-BI@cvt.cv",
         "cc": ["alertas.rpa@cvt.cv"],
         "subject": "Alerta: Retenção de Dados Tráfego"
     },

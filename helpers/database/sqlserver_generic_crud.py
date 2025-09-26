@@ -625,3 +625,33 @@ class SQLServerGenericCRUD:
         except Exception as e:
             logger.error(f"Failed to delete records. Error: {e}")
             return False
+
+    @retry(max_retries=5, delay=5, backoff=2, exceptions=(Exception,), logger=logger)
+    def execute_raw_query(self, query: str, params: Optional[Any] = None) -> Optional[List[Dict[str, Any]]]:
+        """
+        Execute a raw SQL query.
+
+        Args:
+            query (str): The SQL query to execute.
+            params (Any, optional): Parameters to bind to the query. Default is None.
+
+        Returns:
+            Optional[List[Dict[str, Any]]]: If the query is a SELECT query, returns a list of dictionaries
+                                        representing rows. Otherwise, returns None.
+        """
+        try:
+            is_select_query = query.strip().lower().startswith('select')
+            if is_select_query:
+                # Execute the SELECT query and get results as dictionaries
+                result = self.db_client.execute_query(query, params, fetch_as_dict=True)
+                # Format dates in each record
+                formatted_result = [self._format_dates(record) for record in result]
+                return formatted_result
+            else:
+                # Execute the non-SELECT query
+                self.db_client.execute_query(query, params)
+                logger.info("Query executed successfully.")
+                return None
+        except Exception as e:
+            logger.error(f"Failed to execute raw query. Error: {e}")
+            raise

@@ -1,10 +1,5 @@
-from .mysql_client import MySQLClient
 from .postgresql_client import PostgreSQLClient
-from .mongodb_client import MongoDBClient
-from .sqlite_client import SQLiteClient
 from .sqlserver_client import SQLServerClient
-from .oracle_client import OracleClient
-
 class DatabaseFactory:
     """
     Factory class to get the appropriate database instance.
@@ -25,17 +20,9 @@ class DatabaseFactory:
         Returns:
             BaseDatabase: An instance of the appropriate database subclass.
         """
-        if db_type == 'mysql':
-            return MySQLClient(config)
-        elif db_type == 'postgresql':
+        if db_type == 'postgresql':
             return PostgreSQLClient(config)
-        elif db_type == 'mongodb':
-            return MongoDBClient(config)
-        elif db_type == 'sqlite':
-            return SQLiteClient(config)
         elif db_type == 'sqlserver':
             return SQLServerClient(config)
-        elif db_type == 'oracle':
-            return OracleClient(config)
         else:
             raise ValueError(f"Unsupported database type: {db_type}")

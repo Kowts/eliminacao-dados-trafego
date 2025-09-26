@@ -8,4 +8,4 @@ from helpers.utils import setup_logger, timed, remove_keys, get_keys, date_range
 from helpers.dead_letter_queue import DeadLetterQueue, FailedTask
 from helpers.exception_handler import ExceptionHandler
 from helpers.email_sender import EmailSender
-from helpers.database import DatabaseFactory, DatabaseConnectionError, PostgresqlGenericCRUD, OracleGenericCRUD, SQLServerGenericCRUD
+from helpers.database import DatabaseFactory, DatabaseConnectionError, PostgresqlGenericCRUD, SQLServerGenericCRUD

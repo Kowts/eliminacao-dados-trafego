@@ -10,10 +10,10 @@ Email: joselito.coutinho@cvt.cv
 Data Criação: 2025-09-26
 Versão: 2.1.0
 """
-from datetime import datetime
 import re
 import sys
 import unicodedata
+from datetime import datetime
 from helpers.email_sender import EmailSender
 from helpers.exception_handler import ExceptionHandler
 from helpers.operations import close_connections, ensure_control_table_exists, managed_resources, update_last_processed_date

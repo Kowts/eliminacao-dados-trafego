@@ -26,7 +26,7 @@ fi
 
 # Executa o script principal
 echo "Executando o script ETL..."
-python main.py
+python main.py --auto
 
 # Desativa o ambiente virtual
 echo "Desativando o ambiente virtual..."

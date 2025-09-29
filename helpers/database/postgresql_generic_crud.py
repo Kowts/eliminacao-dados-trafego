@@ -192,7 +192,6 @@ class PostgresqlGenericCRUD:
             else:
                 # Execute the non-SELECT query
                 self.db_client.execute_query(query, params)
-                logger.info("Query executed successfully.")
                 return None
         except Exception as e:
             logger.error(f"Failed to execute raw query. Error: {e}")

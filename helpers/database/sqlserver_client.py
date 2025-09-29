@@ -144,7 +144,6 @@ class SQLServerClient(BaseDatabase):
             for i in range(0, len(params_list), batch_size):
                 cursor.executemany(query, params_list[i:i + batch_size])
             self.connection.commit()
-            logger.info("Batch query executed successfully.")
         except pyodbc.Error as err:
             logger.error(f"Failed to execute batch query. Error: {err}")
             self.connection.rollback()  # Ensure rollback on failure

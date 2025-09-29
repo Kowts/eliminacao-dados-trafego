@@ -97,7 +97,6 @@ class PostgreSQLClient(BaseDatabase):
                 with connection.cursor() as cursor:
                     execute_batch(cursor, query, values)
                     connection.commit()
-                    logger.info("Batch query executed successfully.")
             except (OperationalError, DatabaseError) as err:
                 connection.rollback()
                 logger.error(f"Error executing batch query: {err}")

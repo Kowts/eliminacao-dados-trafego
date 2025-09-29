@@ -33,8 +33,14 @@ def calcular_data_corte():
 
     return data_corte
 
-def executar_purge(auto_confirm=False, crud:SQLServerGenericCRUD=None) -> bool:
+def executar_purge(auto_confirm=False, crud: SQLServerGenericCRUD=None) -> bool:
     """Purge automático - 3 meses atrás menos 1 dia usando CRUD."""
+
+    # Carregar nome da tabela do config.ini
+    db_settings = load_ini_config('DATABASE')
+    table_name = db_settings.get('table_tafego', 'f_trafegoc01')
+
+    logger.info(f"Tabela alvo: {table_name}")
 
     # Calcular data de corte
     data_corte = calcular_data_corte()
@@ -49,7 +55,6 @@ def executar_purge(auto_confirm=False, crud:SQLServerGenericCRUD=None) -> bool:
     db_client = None
 
     try:
-
         # Configurar base de dados
         db_config = load_ini_config('CVTVMDWBI')
         db_client = DatabaseFactory.get_database('sqlserver', db_config)
@@ -60,7 +65,7 @@ def executar_purge(auto_confirm=False, crud:SQLServerGenericCRUD=None) -> bool:
 
         count_query = f"""
         SELECT COUNT(*) as to_delete
-        FROM f_trafegoc01
+        FROM {table_name}
         WHERE [Dia] IS NOT NULL
         AND (
             YEAR(CONVERT(DATE, [Dia], 103)) < {cutoff_year}
@@ -76,7 +81,7 @@ def executar_purge(auto_confirm=False, crud:SQLServerGenericCRUD=None) -> bool:
         records_to_delete = count_result[0]['to_delete'] if count_result else 0
 
         # Total de registos
-        total_query = "SELECT COUNT(*) as total FROM f_trafegoc01"
+        total_query = f"SELECT COUNT(*) as total FROM {table_name}"
         total_result = crud.execute_raw_query(total_query)
         total_records = total_result[0]['total'] if total_result else 0
 
@@ -95,7 +100,7 @@ def executar_purge(auto_confirm=False, crud:SQLServerGenericCRUD=None) -> bool:
                 return False
 
         # Prosseguir com eliminação usando a função original
-        metrics, success = executar_eliminacao(crud, cutoff_year, cutoff_month, cutoff_day, records_to_delete)
+        metrics, success = executar_eliminacao(crud, cutoff_year, cutoff_month, cutoff_day, records_to_delete, table_name)
 
         if success:
             # Enviar relatório detalhado por email
@@ -116,56 +121,55 @@ def executar_purge(auto_confirm=False, crud:SQLServerGenericCRUD=None) -> bool:
                 pass
 
 def send_success_report(metrics: Dict[str, Any]):
-        """
-        Enviar relatório de sucesso por email.
+    """
+    Enviar relatório de sucesso por email.
 
-        Args:
-            metrics (Dict[str, Any]): Métricas do processo
-        """
-        try:
+    Args:
+        metrics (Dict[str, Any]): Métricas do processo
+    """
+    try:
+        from helpers.configuration import load_json_config
+        from helpers.email_sender import EmailSender
 
-            from helpers.configuration import load_json_config
-            from helpers.email_sender import EmailSender
+        config = load_json_config()
+        smtp_config = load_ini_config('SMTP')
+        email_sender = EmailSender(smtp_config)
 
-            config = load_json_config()
-            smtp_config = load_ini_config('SMTP')
-            email_sender = EmailSender(smtp_config)
+        report_config = config.get('report', {})
+        process_info = config.get('process', {})
 
-            report_config = config.get('report', {})
-            process_info = config.get('process', {})
+        # Preparar dados para o template
+        alert_title = f"Sucesso: {process_info.get('name', 'Processo ETL')}"
+        alert_message = f"O processo de retenção de dados foi executado com sucesso. Aqui estão as métricas detalhadas:"
 
-            # Preparar dados para o template
-            alert_title = f"Sucesso: {process_info.get('name', 'Processo ETL')}"
-            alert_message = f"O processo de retenção de dados foi executado com sucesso. Aqui estão as métricas detalhadas:"
+        # Dados tabulares para melhor visualização
+        table_data = [
+            {'Métrica': 'Registos Totais (inicial)', 'Valor': f"{metrics['total_records']:,}"},
+            {'Métrica': 'Registos Eliminados', 'Valor': f"{metrics['records_deleted']:,}"},
+            {'Métrica': 'Registos Mantidos', 'Valor': f"{metrics['records_kept']:,}"},
+            {'Métrica': 'Data de Corte', 'Valor': metrics['cutoff_date']},
+            {'Métrica': 'Tempo de Execução', 'Valor': f"{metrics['execution_time']:.2f}s"},
+        ]
 
-            # Dados tabulares para melhor visualização
-            table_data = [
-                {'Métrica': 'Registos Totais (inicial)', 'Valor': f"{metrics['total_records']:,}"},
-                {'Métrica': 'Registos Eliminados', 'Valor': f"{metrics['records_deleted']:,}"},
-                {'Métrica': 'Registos Mantidos', 'Valor': f"{metrics['records_kept']:,}"},
-                {'Métrica': 'Data de Corte', 'Valor': metrics['cutoff_date']},
-                {'Métrica': 'Tempo de Execução', 'Valor': f"{metrics['execution_time']:.2f}s"},
-            ]
+        success = email_sender.send_template_email(
+            report_config=report_config,
+            alert_type='success',
+            alert_title=alert_title,
+            alert_message=alert_message,
+            table_data=table_data,
+            environment="PRODUCTION",
+            timestamp=datetime.now().isoformat()
+        )
 
-            success = email_sender.send_template_email(
-                report_config=report_config,
-                alert_type='success',
-                alert_title=alert_title,
-                alert_message=alert_message,
-                table_data=table_data,
-                environment="PRODUCTION",
-                timestamp=datetime.now().isoformat()
-            )
+        if success:
+            logger.info("Relatório de sucesso enviado")
+        else:
+            logger.warning("Falha ao enviar relatório de sucesso")
 
-            if success:
-                logger.info("Relatório de sucesso enviado")
-            else:
-                logger.warning("Falha ao enviar relatório de sucesso")
+    except Exception as e:
+        logger.error(f"Erro ao enviar relatório de sucesso: {e}")
 
-        except Exception as e:
-            logger.error(f"Erro ao enviar relatório de sucesso: {e}")
-
-def executar_eliminacao(crud, cutoff_year, cutoff_month, cutoff_day, expected_deletes):
+def executar_eliminacao(crud, cutoff_year, cutoff_month, cutoff_day, expected_deletes, table_name):
     """Executar eliminação usando CRUD."""
 
     batch_size = 5000
@@ -174,7 +178,7 @@ def executar_eliminacao(crud, cutoff_year, cutoff_month, cutoff_day, expected_de
 
     delete_query = f"""
     DELETE TOP ({batch_size})
-    FROM f_trafegoc01
+    FROM {table_name}
     WHERE [Dia] IS NOT NULL
     AND (
         YEAR(CONVERT(DATE, [Dia], 103)) < {cutoff_year}
@@ -208,7 +212,7 @@ def executar_eliminacao(crud, cutoff_year, cutoff_month, cutoff_day, expected_de
     elapsed_time = time.time() - start_time
 
     # Verificação final
-    final_query = "SELECT COUNT(*) as total FROM f_trafegoc01"
+    final_query = f"SELECT COUNT(*) as total FROM {table_name}"
     final_result = crud.execute_raw_query(final_query)
     remaining_records = final_result[0]['total'] if final_result else 0
 
